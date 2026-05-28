@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jam_types"
+version = "0.7.1"
+description = "A Python package for JAM Types"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Davide Galassi", email = "davxy@datawok.net"},
+]
+
+dependencies = [
+    "scalecodec @ git+https://github.com/davxy/jam-codec-py",
+    # "scalecodec @ file:///mnt/ssd/develop/misc/scale-codec-py"
+]
+
+[project.scripts]
+jam-decode = "jam_types.scripts.jam_decode:main"
+jam-diff = "jam_types.scripts.jam_diff:main"
+jam-types-info = "jam_types.scripts.jam_types_info:main"
