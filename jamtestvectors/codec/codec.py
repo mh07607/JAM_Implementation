@@ -1,20 +1,7 @@
-# import json
+test_vector_path = "jamtestvectors/codec/full/assurances_extrinsic"
 
-# data = None
-
-# with open('jamtestvectors/codec/tiny/assurances_extrinsic.json', 'r') as file:
-#     # print(file.read().hex())
-#     # print()
-#     # print()
-#     json_file = json.load(file)
-#     print(json_file[0])
-#     print(len(json_file))
-#     print()
-#     print()
-
-with open('jamtestvectors/codec/tiny/assurances_extrinsic.bin', 'rb') as file:
+with open(test_vector_path+'.bin', 'rb') as file:
     print(file.read().hex())
-
 
 import json
 import struct
@@ -70,14 +57,14 @@ def encode_assurances(assurances):
     return encode_length_prefix_final(assurances, encoded_items)
 
 
-with open('jamtestvectors/codec/tiny/assurances_extrinsic.json', 'r') as f:
+with open(test_vector_path+'.json', 'r') as f:
     data = json.load(f)
 
 result = encode_assurances(data)
 print(result.hex())
 
 # Compare against the .bin file
-with open('jamtestvectors/codec/tiny/assurances_extrinsic.bin', 'rb') as f:
+with open(test_vector_path+'.bin', 'rb') as f:
     expected = f.read()
 
 print("Match:", result == expected)
