@@ -14,13 +14,7 @@ def encode_u16_le(value):
     """E2 - 2 byte little endian"""
     return struct.pack('<H', value)
 
-def encode_length_prefix(data: bytes):
-    """↕ - prefix bytes with their length as a compact natural number"""
-    length = len(data)
-    print("length", length)
-    return encode_natural(length) + data
-
-def encode_length_prefix_final(assurances: dict, data: bytes):
+def encode_length_prefix(assurances: dict, data: bytes):
     length = len(assurances)
     print("final length", length)
     return encode_natural(length) + data
@@ -49,12 +43,11 @@ def encode_assurances(assurances):
         validator = encode_u16_le(a['validator_index'])  # E2(v)
         signature = encode_hex(a['signature'])    # s - 64 bytes
 
-        # each item is: anchor ++ length_prefix(bitfield) ++ validator_index ++ signature
-        # encoded_items += anchor + encode_length_prefix(bitfield) + validator + signature
+        # each item is: anchor ++ length_prefix(bitfield) ++ validator_index ++ signature        
         encoded_items += anchor + bitfield + validator + signature
 
     # wrap the whole array with a length prefix (number of items)
-    return encode_length_prefix_final(assurances, encoded_items)
+    return encode_length_prefix(assurances, encoded_items)
 
 
 with open(test_vector_path+'.json', 'r') as f:
