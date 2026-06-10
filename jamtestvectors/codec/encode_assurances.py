@@ -15,8 +15,7 @@ def encode_u16_le(value):
     return struct.pack('<H', value)
 
 def encode_length_prefix(assurances: dict, data: bytes):
-    length = len(assurances)
-    print("final length", length)
+    length = len(assurances)    
     return encode_natural(length) + data
 
 def encode_natural(x):
