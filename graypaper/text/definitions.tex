@@ -1,0 +1,388 @@
+\section{Index of Notation}\label{sec:definitions}
+
+\subsection{Sets}
+
+\subsubsection{Regular Notation}
+\begin{description}
+  \item[$\finitefield$] The set of finite fields.
+  \item[$\N$] The set of non-negative integers. Subscript denotes one greater than the maximum. See section \ref{sec:numbers}.
+  \begin{description}
+    \item[$\N^+$] The set of positive integers (not including zero).
+    \item[$\balance$] The set of balance values. Equivalent to $\Nbits{64}$. See equation \ref{eq:balance}.
+    \item[$\gas$] The set of unsigned gas values. Equivalent to $\Nbits{64}$. See equation \ref{eq:gasregentry}.
+    \item[$\bloblength$] The set of blob length values. Equivalent to $\Nbits{32}$. See section \ref{sec:numbers}.
+    \item[$\preimagelen$] The set of lengths under which a preimage may be solicited. A subset of $\bloblength$, equivalent to $\Nmax{2^{32} - 2}$. See equation \ref{eq:serviceaccount}.
+    \item[$\pvmreg$] The set of register values. Equivalent to $\Nbits{64}$. See equation \ref{eq:gasregentry}.
+    \item[$\serviceid$] The set from which service indices are drawn. Equivalent to $\Nbits{32}$. See section \ref{eq:serviceaccounts}.
+    \item[$\timeslot$] The set of timeslot values. Equivalent to $\Nbits{32}$. See equation \ref{eq:time}.
+  \end{description}
+  \item[$\mathbb{Q}$] The set of rational numbers. Unused.
+  \item[$\mathbb{Z}$] The set of integers. Subscript denotes range. See section \ref{sec:numbers}.
+\end{description}
+
+\subsubsection{Custom Notation}
+\begin{description}
+  \item[$\dictionary{K}{V}$] The set of dictionaries making a partial bijection of domain $k$ to range $v$. See section \ref{sec:dictionaries}.
+  \item[$\serviceaccount$] The set of service $\mathbb{A}$ccounts. See equation \ref{eq:serviceaccount}.
+  \item[$\bitstring$] The set of $\mathbb{b}$itstrings (Boolean sequences). Subscript denotes length. See section \ref{sec:sequences}.
+  \item[$\blob$] The set of $\mathbb{B}$lobs (octet sequences). Subscript denotes length. See section \ref{sec:sequences}.
+  \begin{description}
+    \item[$\blskey$] The set of \textsc{bls} public keys. A subset of $\blob[144]$. See section \ref{sec:signing}.
+    \item[$\ringroot$] The set of Bandersnatch ring roots. A subset of $\blob[144]$. See section \ref{sec:cryptography} and appendix \ref{sec:bandersnatch}.
+  \end{description}
+  \item[$\workcontext$] The set of work-$\mathbb{C}$ontexts. See equation \ref{eq:workcontext}. \emph{Not used as the set of complex numbers.}
+  \item[$\workdigest$] The set of work-$\mathbb{D}$igests. See equation \ref{eq:workdigest}.
+  \item[$\workerror$] The set of work execution $\mathbb{E}$rrors. See equation \ref{eq:workerror}.
+  \item[$\guarantee$] The set of work-report $\mathbb{G}$uarantees. See equation \ref{eq:guarantee}.
+  \item[$\hash$] The set of 32-octet cryptographic values, equivalent to $\blob[32]$. Often a $\mathbb{H}$ash function's result. See section \ref{sec:cryptography}.
+  \begin{description}
+    \item[$\edkey$] The set of Ed25519 public keys. A subset of $\blob[32]$. See section \ref{sec:signing}.
+    \item[$\bskey$] The set of Bandersnatch public keys. A subset of $\blob[32]$. See section \ref{sec:cryptography} and appendix \ref{sec:bandersnatch}.
+  \end{description}
+  \item[$\pvm¬instance$] The set representing the state of an $\mathbb{I}$nner \textsc{pvm} instance. See equation \ref{eq:innerpvm}.
+  \item[$\segment$] The set of data segments, equivalent to $\blob[\Csegmentsize]$. See equation \ref{eq:segment}.
+  \item[$\valkey$] The set of validator $\mathbb{K}$ey-sets. See equation \ref{eq:validatorkeys}.
+  \item[$\implications$] The set representing implications of accumulation. See equation \ref{eq:implications}.
+  \item[$\ram$] The set of \textsc{pvm} $\mathbb{M}$emory (\textsc{ram}) states. See equation \ref{eq:pvmmemory}.
+  \item[$\acconeout$] The set of single-service accumulation $\mathbb{O}$utputs. See equation \ref{eq:acconeout}.
+  \item[$\workpackage$] The set of work-$\mathbb{P}$ackages. See equation \ref{eq:workpackage}.
+  \item[$\workreport$] The set of work-$\mathbb{R}$eports. See equation \ref{eq:workreport}. \emph{Note used for the set of real numbers.}
+  \item[$\partialstate$] The set representating a portion of overall $\mathbb{S}$tate, used during accumulation. See equation \ref{eq:partialstate}.
+  \item[$\safroleticket$] The set of slot-sealer $\mathbb{T}$ickets. See equation \ref{eq:ticket}.
+  \item[$\operandtuple$] The information concerning a single work-item once prepared as an operand for the accumulation function. See equation \ref{eq:operandtuple}.
+  \item[$\valcount$] The set of $\mathbb{V}$alidator key-set sizes. See equation \ref{eq:valcount}.
+  \item[$\readable{\memory}$] The set of $\mathbb{V}$alidly readable indices for \textsc{pvm} \textsc{ram} $\memory$. See appendix \ref{sec:virtualmachine}.
+  \item[$\writable{\memory}$] The set of $\mathbb{V}$alidly writable indices for \textsc{pvm} \textsc{ram} $\memory$. See appendix \ref{sec:virtualmachine}.
+  \item[$\edsignature{k}{m}$] The set of $\mathbb{V}$alid Ed25519 signatures of the key $k$ and message $m$. A subset of $\blob[64]$. See section \ref{sec:cryptography}.
+  \item[$\bssignature{k}{c}{m}$] The set of $\mathbb{V}$alid Bandersnatch signatures of the public key $k$, context $c$ and message $m$. A subset of $\blob[96]$. See section \ref{sec:cryptography}.
+  \item[$\bsringproof{r}{c}{m}$] The set of $\mathbb{V}$alid Bandersnatch Ring\textsc{vrf} proofs of the root $r$, context $c$ and message $m$. A subset of $\blob[784]$. See section \ref{sec:cryptography}.
+  \item[$\workitem$] The set of $\mathbb{W}$ork items. See equation \ref{eq:workitem}.
+  \item[$\defxfer$] The set of deferred transfers. See equation \ref{eq:defxfer}.
+  \item[$\avspec$] The set of availability specifications. See equation \ref{eq:avspec}.
+\end{description}
+
+\subsection{Functions}
+
+\begin{description}
+%  \item[$\Gamma$] Unused.
+  \item[$\accumulate$] The accumulation functions (see section \ref{sec:accumulationexecution}):
+  \begin{description}
+    \item[$\accone$] The single-step accumulation function. See equation \ref{eq:accone}.
+    \item[$\accpar$] The parallel accumulation function. See equation \ref{eq:accpar}.
+    \item[$\accseq$] The full sequential accumulation function. See equation \ref{eq:accseq}.
+  \end{description}
+%  \item[$\gascounter$] Unused.
+%  \item[$\Pi$] Unused.
+  \item[$\histlookup$] The historical lookup function. See equation \ref{eq:historicallookup}.
+  \item[$\computereport$] The work-report computation function. See equation \ref{eq:computereport}.
+  \item[$\makebundle$] The bundle assembly function. See equation \ref{eq:makebundle}.
+  \item[$\transitionstate$] The general state transition function. See equations \ref{eq:statetransition}, \ref{eq:transitionfunctioncomposition}.
+%  \item[$\Sigma$] Unused.
+  \item[$\Phi$] The key-nullifier function. See equation \ref{eq:blacklistfilter}.
+  \item[$\Psi$] The whole-program \textsc{pvm} machine state-transition function. See equation \ref{sec:virtualmachine}.
+  \begin{description}
+    \item[$\Psi_1$] The single-step (\textsc{pvm}) machine state-transition function. See appendix \ref{sec:virtualmachine}.
+    \item[$\Psi_A$] The Accumulate \textsc{pvm} invocation function. See appendix \ref{sec:virtualmachineinvocations}.
+    \item[$\Psi_H$] The host-function invocation (\textsc{pvm}) with host-function marshalling. See appendix \ref{sec:virtualmachine}.
+    \item[$\Psi_I$] The Is-Authorized \textsc{pvm} invocation function. See appendix \ref{sec:virtualmachineinvocations}.
+    \item[$\Psi_M$] The marshalling whole-program \textsc{pvm} machine state-transition function. See appendix \ref{sec:virtualmachine}.
+    \item[$\Psi_R$] The Refine \textsc{pvm} invocation function. See appendix \ref{sec:virtualmachineinvocations}.
+  \end{description}
+  \item[$\Omega$] Virtual machine host-call functions. See appendix \ref{sec:virtualmachineinvocations}.
+  \begin{description}
+    \item[$\Omega_A$] Assign-core host-call.
+    \item[$\Omega_B$] Empower-service host-call.
+    \item[$\Omega_C$] Checkpoint host-call.
+    \item[$\Omega_D$] Designate-validators host-call.
+    \item[$\Omega_E$] Export segment host-call.
+    \item[$\Omega_F$] Forget-preimage host-call.
+    \item[$\Omega_G$] Gas-remaining host-call.
+    \item[$\Omega_H$] Historical-lookup-preimage host-call.
+    \item[$\Omega_I$] Information-on-service host-call.
+    \item[$\Omega_J$] Eject-service host-call.
+    \item[$\Omega_K$] Kickoff-\textsc{pvm} host-call.
+    \item[$\Omega_L$] Lookup-preimage host-call.
+    \item[$\Omega_M$] Make-\textsc{pvm} host-call.
+    \item[$\Omega_N$] New-service host-call.
+    \item[$\Omega_O$] Poke-\textsc{pvm} host-call.
+    \item[$\Omega_P$] Peek-\textsc{pvm} host-call.
+    \item[$\Omega_Q$] Query-preimage host-call.
+    \item[$\Omega_R$] Read-storage host-call.
+    \item[$\Omega_S$] Solicit-preimage host-call.
+    \item[$\Omega_T$] Transfer host-call.
+    \item[$\Omega_U$] Upgrade-service host-call.
+    \item[$\Omega_V$] Set-supervisor host-call.
+    \item[$\Omega_W$] Write-storage host-call.
+    \item[$\Omega_X$] Expunge an inner-\textsc{pvm} instance or a compiled program module host-call.
+    \item[$\Omega_Y$] Fetch data host-call.
+    \item[$\Omega_Z$] Pages inner-\textsc{pvm} memory host-call.
+    \item[$\Omega_\Taurus$] Yield accumulation trie result host-call.
+    \item[$\Omega_\Aries$] Provide preimage host-call.
+    \item[$\Omega_\Gemini$] Grow heap host-call.
+    \item[$\Omega_\Gamma$] Compile host-call.
+  \end{description}
+\end{description}
+
+\subsection{Utilities, Externalities and Standard Functions}
+
+\begin{description}
+  \item[$\fnmmrappend(\dots)$] The Merkle mountain range append function. See equation \ref{eq:mmrappend}.
+  \item[$\fnoctetstobits\sub{n}(\dots)$] The octets-to-bits function for $n$ octets. Superscripted ${}^{-1}$ to denote the inverse. See equation \ref{eq:bitsfunc}.
+  \item[$\erasurecode{v}{n}{\dots}$] The erasure-coding function for $v$ validators and $n$ pieces. See equation \ref{eq:erasurecoding}.
+  \item[$\fnecoriginalshards(\dots)$] The original-chunk-count function. See equation \ref{eq:ecoriginalshards}.
+  \item[$\encode{\dots}$] The octet-sequence encode function. Superscripted ${}^{-1}$ to denote the inverse. See appendix \ref{sec:serialization}.
+  \item[$\fnfyshuffle(\dots)$] The Fisher-Yates shuffle function. See equation \ref{eq:suffle}.
+  \item[$\fnmemgas(L, \ell)$] The memory-sized gas function. See equation \ref{eq:fnmemgas}.
+  \item[$\blake{\dots}$] The Blake 2b 256-bit hash function. See section \ref{sec:cryptography}.
+  \item[$\keccak{\dots}$] The Keccak 256-bit hash function. See section \ref{sec:cryptography}.
+
+  \item[$\fnmerklejustsubpath{x}(\dots)$] The justification path to a specific $2^x$ size page of a constant-depth Merkle tree. See equation \ref{eq:constantdepthsubtreemerklejust}.
+  \item[$\keys{\dots}$] The domain, or set of keys, of a dictionary. See section \ref{sec:dictionaries}.
+  \item[$\fnmerklesubtreepage{x}(\dots)$] The $2^x$ size page function for a constant-depth Merkle tree. See equation \ref{eq:constantdepthsubtreemerkleleafpage}.
+  \item[$\merklizecd{\dots}$] The constant-depth binary Merklization function. See appendix \ref{sec:merklization}.
+  \item[$\merklizewb{\dots}$] The well-balanced binary Merklization function. See appendix \ref{sec:merklization}.
+  \item[$\merklizestate{\dots}$] The state Merklization function. See appendix \ref{sec:statemerklization}.
+
+  \item[$\getringroot{\dots}$] The Bandersnatch ring root function. See section \ref{sec:cryptography} and appendix \ref{sec:bandersnatch}.
+  \item[$\zeropad{n}{\dots}$] The octet-array zero-padding function. See equation \ref{eq:zeropadding}.
+  \item[$\seqfromhash{}{\dots}$] The numeric-sequence-from-hash function. See equation \ref{eq:sequencefromhash}.
+  \item[$\ecrecover{v}{n}{\dots}$] The erasure-coding recovery function for $v$ validators and $n$ pieces. See equation \ref{eq:erasurecodinginv}.
+  \item[$\edsigndata{k}{\dots}$] The Ed25519 signing function. See section \ref{sec:cryptography}.
+  \item[$\blssigndata{k}{\dots}$] The \textsc{bls} signing function. See section \ref{sec:cryptography}.
+  \item[$\wallclock$] The current time expressed in seconds after the start of the \Jam Common Era. See section \ref{sec:commonera}.
+  \item[$\subifnone{\dots}$] The substitute-if-nothing function. See equation \ref{eq:substituteifnothing}.
+  \item[$\values{\dots}$] The range, or set of values, of a dictionary or sequence. See section \ref{sec:dictionaries}.
+  \item[$\sext{n}{\dots}$] The signed-extension function for a value in $\Nbits{8n}$. See equation \ref{eq:signedextension}.
+  \item[$\banderout{\dots}$] The alias/output/entropy function of a Bandersnatch \textsc{vrf} signature/proof. See section \ref{sec:cryptography} and appendix \ref{sec:bandersnatch}.
+  \item[$\fntosigned{n}(\dots)$] The into-signed function for a value in $\Nbits{8n}$. Superscripted with ${}^{-1}$ to denote the inverse. See equation \ref{eq:signedfunc}.
+\end{description}
+
+\subsection{Values}
+
+\subsubsection{Block-context Terms}
+
+These terms are all contextualized to a single block. They may be superscripted with some other term to alter the context and reference some other block.
+\begin{description}
+  \item[$\ancestors$] The ancestor set of the block. See equation \ref{eq:ancestors}.
+  \item[$\block$] The block. See equation \ref{eq:block}.
+  \item[$\extrinsic$] The block extrinsic. See equation \ref{eq:extrinsic}.
+  \item[$\accoutcommitment{v}$] The \textsc{Beefy} signed commitment of validator $v$. See equation \ref{eq:accoutsignedcommitment}.
+  \item[$\reporters$] The set of Ed25519 guarantor keys who made a work-report. See equation \ref{eq:guarantorsig}.
+  \item[$\header$] The block header. See equation \ref{eq:header}.
+  \item[$\accumulationstatistics$] Service-indexed accumulation statistics for this block. See equations \ref{eq:accumulationstatisticsspec} and \ref{eq:accumulationstatisticsdef}.
+  \item[$\guarantorassignments$] The current core assignments. See section \ref{sec:coresandvalidators}.
+  \item[$\guarantorassignmentsunderlastrotation$] The core assignments in the previous rotation. See section \ref{sec:coresandvalidators}.
+  \item[$\justbecameavailable$] The sequence of work-reports which have now become available and ready for accumulation. See equation \ref{eq:availableworkreports}.
+  \item[$\isticketed$] The ticketed condition, true if the block was sealed with a ticket signature rather than a fallback. See equations \ref{eq:ticketconditiontrue} and \ref{eq:ticketconditionfalse}.
+  \item[$\isaudited$] The audit condition, equal to $\top$ once the block is audited. See section \ref{sec:auditing}.
+\end{description}
+
+Without any superscript, the block is assumed to the block being imported or, if no block is being imported, the head of the best chain (see section \ref{sec:bestchain}). Explicit block-contextualizing superscripts include:
+\begin{description}
+  \item[$\block^\natural$] The latest finalized block. See equation \ref{sec:bestchain}.
+  \item[$\block^\flat$] The block at the head of the best chain. See equation \ref{sec:bestchain}.
+\end{description}
+
+\subsubsection{State components}
+
+Here, the prime annotation indicates posterior state. Individual components may be identified with a letter subscript.
+\begin{description}
+  \item[$\authpool$] The core $\authpool$uthorizations pool. See equation \ref{eq:authstatecomposition}.
+  \item[$\recent$] Log of recent activity. See equation \ref{eq:recentspec}.
+  \begin{description}
+    \item[$\recenthistory$] Information on the most recent blocks. See equation \ref{eq:recenthistoryspec}.
+    \item[$\accoutbelt$] The Merkle mountain belt for accumulating Accumulation outputs. See equations \ref{eq:accoutbeltspec} and \ref{eq:accoutbeltdef}.
+  \end{description}
+  \item[$\safrole$] State concerning Safrole. See equation \ref{eq:consensusstatecomposition}.
+  \begin{description}
+    \item[$\ticketaccumulator$] The sealing lottery ticket accumulator. See equation \ref{eq:ticketaccumulatorsealticketsspec}.
+    \item[$\pendingset$] The keys for the validators of the next epoch, equivalent to those keys which constitute $\epochroot$. See equation \ref{eq:validatorkeys}.
+    \item[$\sealtickets$] The slot-sealer sequence of the current epoch. See equation \ref{eq:ticketaccumulatorsealticketsspec}.
+    \item[$\epochroot$] The Bandersnatch root for the current epoch's ticket submissions. See equation \ref{eq:epochrootspec}.
+  \end{description}
+  \item[$\accountspre$] The (prior) state of the service accounts. See equation \ref{eq:serviceaccounts}.
+  \begin{description}
+    \item[$\accountspostacc$] The post-accumulation, pre-preimage integration intermediate state. See equation \ref{eq:accountspostaccdef}.
+  \end{description}
+  \item[$\entropy$] The entropy accumulator and epochal randomness. See equation \ref{eq:entropycomposition}.
+  \item[$\stagingset$] The validator keys and metadata to be drawn from next. See equation \ref{eq:validatorkeys}.
+  \item[$\activeset$] The validator keys and metadata currently active. See equation \ref{eq:validatorkeys}.
+  \item[$\previousset$] The validator keys and metadata which were active in the prior epoch. See equation \ref{eq:validatorkeys}.
+  \item[$\availassignments$] The availability assignments. A core's availability assignment is the work-report guarantee which is being made available prior to accumulation. See equation \ref{eq:reportingstate}.
+  \begin{description}
+    \item[$\availassignmentspostjudgment$] The post-judgment, pre-assurances-extrinsic intermediate state. See equation \ref{eq:removenonpositive}.
+    \item[$\availassignmentspostassurances$] The post-assurances-extrinsic, pre-guarantees-extrinsic intermediate state. See equation \ref{eq:availassignmentspostassurancesdef}.
+  \end{description}
+  \item[$\thestate$] The overall state of the system. See equations \ref{eq:statetransition}, \ref{eq:statecomposition}.
+  \item[$\thetime$] The most recent block's timeslot. See equation \ref{eq:timeslotindex}.
+  \item[$\authqueue$] The authorization queue. See equation \ref{eq:authstatecomposition}.
+  \item[$\disputes$] Past judgments on work-reports and validators. See equation \ref{eq:disputesspec}.
+  \begin{description}
+    \item[$\badset$] Work-reports judged to be incorrect. See equation \ref{eq:badsetdef}.
+    \item[$\goodset$] Work-reports judged to be correct. See equation \ref{eq:goodsetdef}.
+    \item[$\wonkyset$] Work-reports whose validity is judged to be unknowable. See equation \ref{eq:wonkysetdef}.
+    \item[$\offenders$] Validators who made a judgment found to be incorrect. See equation \ref{eq:offendersdef}.
+  \end{description}
+  \item[$\privileges$] The privileged service indices. See equation \ref{eq:privilegesspec}.
+  \begin{description}
+    \item[$\manager$] The index of the blessed service. See equation \ref{eq:accountspostaccdef}.
+    \item[$\assigners$] The indices of the services able to assign each core's authorizer queue. See equation \ref{eq:accountspostaccdef}.
+    \item[$\delegator$] The index of the designate service. See equation \ref{eq:accountspostaccdef}.
+    \item[$\registrar$] The index of the registrar service. See equation \ref{eq:accountspostaccdef}.
+    \item[$\alwaysaccers$] The always-accumulate service indices and their basic gas allowance. See equation \ref{eq:accountspostaccdef}.
+  \end{description}
+  \item[$\activity$] The activity statistics for the validators. See equation \ref{eq:activityspec}.
+  \item[$\ready$] The accumulation queue. See equation \ref{eq:readyspec}.
+  \item[$\accumulated$] The accumulation history. See equation \ref{eq:accumulatedspec}.
+  \item[$\lastaccout$] The most recent Accumulation outputs. See equations \ref{eq:lastaccoutspec} and \ref{eq:finalstateaccumulation}.
+\end{description}
+
+\subsubsection{Virtual Machine components}
+
+\begin{description}
+  \item[$\varepsilon$] The exit-reason resulting from all machine state transitions.
+  \item[$\nu$] The immediate values of an instruction.
+  \item[$\memory$] The memory sequence; a member of the set $\ram$.
+  \item[$\gascounter$] The gas counter.
+  \item[$\registers$] The registers.
+  \item[$\zeta$] The instruction sequence.
+  \item[$\varpi$] The sequence of basic blocks of the program.
+  \item[$\imath$] The instruction counter.
+\end{description}
+
+\subsubsection{Constants}
+
+\begin{description}
+  \item[$\Ctrancheseconds = 8$] The period, in seconds, between audit tranches. See section \ref{sec:auditselection}.
+  \item[$\Citemdeposit = 10$] The additional minimum balance required per item of elective service state. See equation \ref{eq:deposits}.
+  \item[$\Cbytedeposit = 1$] The additional minimum balance required per octet of elective service state. See equation \ref{eq:deposits}.
+  \item[$\Cbasedeposit = 100$] The basic minimum balance which all services require. See equation \ref{eq:deposits}.
+  \item[$\Ccorecount = 341$] The total number of cores.
+  \item[$\Cexpungeperiod = 19,200$] The period in timeslots after which an unreferenced preimage may be expunged. See \texttt{forget} definition in section \ref{sec:accumulatefunctions}.
+  \item[$\Cepochlen = 600$] The length of an epoch in timeslots. See section \ref{sec:epochsandslots}.
+  \item[$\Cauditbiasfactor = 2$] The audit bias factor, the expected number of additional validators who will audit a work-report in the following tranche for each no-show in the previous. See equation \ref{eq:latertranches}.
+  \item[$\Creportaccgas = 10,000,000$] The gas allocated to invoke a work-report's Accumulation logic.
+  \item[$\Cpackageauthgas = 50,000,000$] The gas allocated to invoke a work-package's Is-Authorized logic.
+  \item[$\Cpackagerefgas = 5,000,000,000$] The gas allocated to invoke a work-package's Refine logic.
+  \item[$\Cblockaccgas = 3,500,000,000$] The total gas allocated across for all Accumulation. Should be no smaller than $\Creportaccgas\cdot\Ccorecount + \sum_{g \in \values{\alwaysaccers}}(g)$.
+  \item[$\Crecenthistorylen = 8$] The size of recent history, in blocks. See equation \ref{eq:recenthistorydef}.
+  \item[$\Cmaxpackageitems = 16$] The maximum amount of work items in a package. See equations \ref{eq:workreport} and \ref{eq:workpackage}.
+  \item[$\Cmaxreportdeps = 8$] The maximum sum of dependency items in a work-report. See equation \ref{eq:limitreportdeps}.
+  \item[$\Cmaxblocktickets = 16$] The maximum number of tickets which may be submitted in a single extrinsic. See equation \ref{eq:enforceticketlimit}.
+  \item[$\Cmaxlookupanchorage = 14,400$] The maximum age in timeslots of the lookup anchor. See equation \ref{eq:limitlookupanchorage}.
+  \item[$\mathsf{M}$] Host-function gas costs, see below.
+  \item[$\Cmaxextrinsicverdicts = 16$] The maximum number of verdicts which may be included in a single extrinsic. See equation \ref{eq:disputesextrinsics}.
+  \item[$\Cmaxextrinsicoffenses = 16$] The maximum number each of culprits or faults which may be included in a single extrinsic. See equation \ref{eq:disputesextrinsics}.
+  \item[$\Cauthpoolsize = 8$] The maximum number of items in the authorizations pool. See equation \ref{eq:authstatecomposition}.
+  \item[$\Cslotseconds = 6$] The slot period, in seconds. See equation \ref{sec:epochsandslots}.
+  \item[$\Cauthqueuesize = 80$] The number of items in the authorizations queue. See equation \ref{eq:authstatecomposition}.
+  \item[$\Crotationperiod = 10$] The rotation period of validator-core assignments, in timeslots. See sections \ref{sec:coresandvalidators} and \ref{sec:workreportguarantees}.
+  \item[$\Cminpublicindex = 2^{16}$] The minimum public service index. Services of indices below these may only be created by the Registrar. See equation \ref{eq:newserviceindex}.
+  \item[$\Cmaxpackagexts = 128$] The maximum number of extrinsics in a work-package. See equation \ref{eq:limitworkpackagebandwidth}.
+  \item[$\Cassurancetimeoutperiod = 5$] The period in timeslots after which reported but unavailable work is cleared. See equation \ref{eq:availassignmentspostassurancesdef}.
+  \item[$\Cmaxauthcodesize = 64,000$] The maximum size of is-authorized code in octets. See equation \ref{eq:isauthinvocation}.
+  \item[$\Cmaxbundlesize = 13,791,360$] The maximum size of the concatenated variable-size blobs, extrinsics and imported segments of a work-package, in octets. See equation \ref{eq:checkextractsize}.
+  \item[$\Cmaxservicecodesize = 4,000,000$] The maximum size of service code in octets. See equations \ref{eq:refinvocation} \& \ref{eq:accinvocation}.
+  \item[$\Csegmentsize = 4104$] The size of a segment in octets. See section \ref{sec:segments}.
+  \item[$\Csegmentfootprint = \Csegmentsize + 32\ceil{\log_2(\Cmaxpackageexports)} = 4488$] The additional footprint in the Audits DA of a single imported segment. See equation \ref{eq:segmentfootprint}.
+  \item[$\Cmaxpackageimports = 3,072$] The maximum number of imports in a work-package. See equation \ref{eq:limitworkpackagebandwidth}.
+  \item[$\Cmaxreportvarsize = 48\cdot2^{10}$] The maximum total size of all unbounded blobs in a work-report, in octets. See equation \ref{eq:limitworkreportsize}.
+  \item[$\Cmemosize = 128$] The size of a transfer memo in octets. See equation \ref{eq:defxfer}.
+  \item[$\Cmaxpackageexports = 3,072$] The maximum number of exports in a work-package. See equation \ref{eq:limitworkpackagebandwidth}.
+  \item[$\mathsf{X}$] Context strings, see below.
+  \item[$\Cepochtailstart = 500$] The number of slots into an epoch at which ticket-submission ends. See sections \ref{sec:slotkeysequence}, \ref{sec:epochmarker} and \ref{sec:safrolextandtickets}.
+  \item[$\Cpvmdynaddralign = 2$] The \textsc{pvm} dynamic address alignment factor. See equation \ref{eq:jumptablealignment}.
+  \item[$\Cpvminitinputsize = 2^{24}$] The standard \textsc{pvm} program initialization input data size. See equation \ref{sec:standardprograminit}.
+  \item[$\Cpvmpagesize = 2^{12}$] The \textsc{pvm} memory page size. See equation \ref{eq:pvmmemory}.
+  \item[$\Cpvminitzonesize = 2^{16}$] The standard \textsc{pvm} program initialization zone size. See section \ref{sec:standardprograminit}.
+\end{description}
+
+\subsubsection{Host-function gas costs}
+
+These constants are used in the host function gas cost equations in appendix \ref{sec:virtualmachineinvocations}. The constant term for the host function $\Omega_\square$ is denoted $\mathsf{M}_{\square,c}$, or simply $\mathsf{M}_\square$ if there are no other terms. The octet-linear term, if there is one, is denoted $\mathsf{M}_{\square,\ell}$ and specifies gas per 1024 octets. The page-linear term, again optional, is denoted $\mathsf{M}_{\square,p}$ and specifies gas per page. The gas for a host call with constant term $c$ and octet-linear term $L$ with $\ell$ octets is $c + \fnmemgas(L, \ell)$ (see equation \ref{eq:fnmemgas}).
+
+\begin{description}
+  \item[$\Cgasunknown = 1000$] Gas cost charged for an unknown host-call.
+  \item[$\CgasA = 1818$] $\Omega_A$ (\texttt{assign}) base gas cost.
+  \item[$\CgasBconst = 422$] $\Omega_B$ (\texttt{bless}) base gas cost.
+  \item[$\CgasBlinear = 20$] $\Omega_B$ (\texttt{bless}) gas per item.
+  \item[$\CgasC = 103$] $\Omega_C$ (\texttt{checkpoint}) base gas cost.
+  \item[$\CgasDconst = 1100$] $\Omega_D$ (\texttt{designate}) base gas cost.
+  \item[$\CgasDlinear = 302$] $\Omega_D$ (\texttt{designate}) gas per validator.
+  \item[$\CgasE = 3521$] $\Omega_E$ (\texttt{export}) base gas cost.
+  \item[$\CgasF = 3250$] $\Omega_F$ (\texttt{forget}) base gas cost.
+  \item[$\CgasG = 48$] $\Omega_G$ (\texttt{gas}) base gas cost.
+  \item[$\CgasHconst = 1125$] $\Omega_H$ (\texttt{historical\_lookup}) base gas cost.
+  \item[$\CgasHlinear = 264$] $\Omega_H$ (\texttt{historical\_lookup}) gas per 1024 octets ($\fnmemgas(\CgasHlinear, \ell)$).
+  \item[$\CgasI = 703$] $\Omega_I$ (\texttt{info}) base gas cost.
+  \item[$\CgasJ = 458$] $\Omega_J$ (\texttt{eject}) base gas cost.
+  \item[$\CgasK = 968$] $\Omega_K$ (\texttt{invoke}) base gas cost.
+  \item[$\CgasLconst = 600$] $\Omega_L$ (\texttt{lookup}) base gas cost.
+  \item[$\CgasLlinear = 248$] $\Omega_L$ (\texttt{lookup}) gas per 1024 octets ($\fnmemgas(\CgasLlinear, \ell)$).
+  \item[$\CgasM = 1862$] $\Omega_M$ (\texttt{machine}) gas cost.
+  \item[$\CgasN = 3855$] $\Omega_N$ (\texttt{new}) base gas cost.
+  \item[$\CgasOconst = 297$] $\Omega_O$ (\texttt{poke}) base gas cost.
+  \item[$\CgasOlinear = 224$] $\Omega_O$ (\texttt{poke}) gas per 1024 octets ($\fnmemgas(\CgasOlinear, \ell)$).
+  \item[$\CgasPconst = 377$] $\Omega_P$ (\texttt{peek}) base gas cost.
+  \item[$\CgasPlinear = 336$] $\Omega_P$ (\texttt{peek}) gas per 1024 octets ($\fnmemgas(\CgasPlinear, \ell)$).
+  \item[$\CgasQ = 643$] $\Omega_Q$ (\texttt{query}) base gas cost.
+  \item[$\CgasRconst = 2407$] $\Omega_R$ (\texttt{read}) base gas cost.
+  \item[$\CgasRkeylinear = 1736$] $\Omega_R$ (\texttt{read}) key gas per 1024 octets ($\fnmemgas(\CgasRkeylinear, \ell)$).
+  \item[$\CgasRvallinear = 248$] $\Omega_R$ (\texttt{read}) value gas per 1024 octets ($\fnmemgas(\CgasRvallinear, \ell)$).
+  \item[$\CgasS = 2193$] $\Omega_S$ (\texttt{solicit}) base gas cost.
+  \item[$\CgasT = 575$] $\Omega_T$ (\texttt{transfer}) base gas cost.
+  \item[$\CgasU = 1028$] $\Omega_U$ (\texttt{upgrade}) base gas cost.
+  \item[$\CgasV = 1000$] $\Omega_V$ (\texttt{supervisor}) base gas cost.
+  \item[$\CgasWconst = 2442$] $\Omega_W$ (\texttt{write}) base gas cost.
+  \item[$\CgasWvallinear = 216$] $\Omega_W$ (\texttt{write}) gas per 1024 octets ($\fnmemgas(\CgasWvallinear, \ell)$).
+  \item[$\CgasWkeylinear = 3358$] $\Omega_W$ (\texttt{write}) key gas per 1024 octets ($\fnmemgas(\CgasWkeylinear, \ell)$).
+  \item[$\CgasX = 335$] $\Omega_X$ (\texttt{expunge}) base gas cost.
+  \item[$\CgasYc{0} = 390, \CgasYl{0} = 0$] $\Omega_Y$ (\texttt{fetch}) case 0: protocol parameters.
+  \item[$\CgasYc{1} = 103, \CgasYl{1} = 0$] $\Omega_Y$ (\texttt{fetch}) case 1: entropy.
+  \item[$\CgasYc{2} = 80, \CgasYl{2} = 96$] $\Omega_Y$ (\texttt{fetch}) case 2: auth trace.
+  \item[$\CgasYc{3} = 85, \CgasYl{3} = 96$] $\Omega_Y$ (\texttt{fetch}) case 3: any extrinsic, by index.
+  \item[$\CgasYc{4} = 85, \CgasYl{4} = 96$] $\Omega_Y$ (\texttt{fetch}) case 4: our extrinsic, by index.
+  \item[$\CgasYc{5} = 171, \CgasYl{5} = 0$] $\Omega_Y$ (\texttt{fetch}) case 5: any import, by index.
+  \item[$\CgasYc{6} = 171, \CgasYl{6} = 0$] $\Omega_Y$ (\texttt{fetch}) case 6: our import, by index.
+  \item[$\CgasYc{7} = 85, \CgasYl{7} = 96$] $\Omega_Y$ (\texttt{fetch}) case 7: encoded work-package.
+  \item[$\CgasYc{8} = 84, \CgasYl{8} = 0$] $\Omega_Y$ (\texttt{fetch}) case 8: auth config.
+  \item[$\CgasYc{9} = 88, \CgasYl{9} = 0$] $\Omega_Y$ (\texttt{fetch}) case 9: auth token.
+  \item[$\CgasYc{10} = 111, \CgasYl{10} = 0$] $\Omega_Y$ (\texttt{fetch}) case 10: refine context.
+  \item[$\CgasYc{11} = 317, \CgasYl{11} = 0$] $\Omega_Y$ (\texttt{fetch}) case 11: items summary.
+  \item[$\CgasYc{12} = 250, \CgasYl{12} = 0$] $\Omega_Y$ (\texttt{fetch}) case 12: any item summary.
+  \item[$\CgasYc{13} = 95, \CgasYl{13} = 96$] $\Omega_Y$ (\texttt{fetch}) case 13: any payload.
+  \item[$\CgasYc{14} = 287, \CgasYl{14} = 400$] $\Omega_Y$ (\texttt{fetch}) case 14: accumulate items.
+  \item[$\CgasYc{15} = 355, \CgasYl{15} = 344$] $\Omega_Y$ (\texttt{fetch}) case 15: any accumulate item.
+  \item[$\CgasYunknown = 80$] $\Omega_Y$ (\texttt{fetch}) otherwise: nothing.
+  \item[$\CgasZallocconst = 275$] $\Omega_Z$ (\texttt{pages}) alloc base gas cost.
+  \item[$\CgasZalloclinear = 121$] $\Omega_Z$ (\texttt{pages}) alloc gas per page.
+  \item[$\CgasZfreeconst = 212$] $\Omega_Z$ (\texttt{pages}) free base gas cost.
+  \item[$\CgasZfreelinear = 118$] $\Omega_Z$ (\texttt{pages}) free gas per page.
+  \item[$\CgasZsetmodeconst = 130$] $\Omega_Z$ (\texttt{pages}) setmode base gas cost.
+  \item[$\CgasZsetmodelinear = 29$] $\Omega_Z$ (\texttt{pages}) setmode gas per page.
+  \item[$\CgasZinvalid = 80$] $\Omega_Z$ (\texttt{pages}) invalid-$r$ base gas cost.
+  \item[$\CgasTaurus = 98$] $\Omega_\Taurus$ (\texttt{yield}) base gas cost.
+  \item[$\CgasAriesconst = 3980$] $\Omega_\Aries$ (\texttt{provide}) base gas cost.
+  \item[$\CgasArieslinear = 2264$] $\Omega_\Aries$ (\texttt{provide}) gas per 1024 octets ($\fnmemgas(\CgasArieslinear, \ell)$).
+  \item[$\CgasGeminiconst = 275$] $\Omega_\Gemini$ (\texttt{grow\_heap}) base gas cost.
+  \item[$\CgasGeminilinear = 121$] $\Omega_\Gemini$ (\texttt{grow\_heap}) gas per additional page.
+  \item[$\CgasGammamemconst = 1862$] $\Omega_\Gamma$ (\texttt{compile}) base gas cost when compiling from memory.
+  \item[$\CgasGammadbconst = 1862$] $\Omega_\Gamma$ (\texttt{compile}) base gas cost when compiling from the database.
+  \item[$\CgasGammamemlinear = 264$] $\Omega_\Gamma$ (\texttt{compile}) in-memory read gas per 1024 octets ($\fnmemgas(\CgasGammamemlinear, \ell)$).
+  \item[$\CgasGammadblinear = 366$] $\Omega_\Gamma$ (\texttt{compile}) database lookup read gas per 1024 octets ($\fnmemgas(\CgasGammadblinear, \ell)$).
+\end{description}
+
+\subsubsection{Signing Contexts}
+
+\begin{description}
+  \item[$\Xavailable = \token{\$jam\_available}$] \emph{Ed25519} Availability assurances. See equation \ref{eq:assurancesig}.
+  \item[$\Xbeefy = \token{\$jam\_beefy}$] \emph{\textsc{bls}} Accumulate-result-root-\textsc{mmr} commitment. See equation \ref{eq:accoutsignedcommitment}.
+  \item[$\Xentropy = \token{\$jam\_entropy}$] On-chain entropy generation. See equation \ref{eq:vrfsigcheck}.
+  \item[$\Xfallback = \token{\$jam\_fallback\_seal}$] \emph{Bandersnatch} Fallback block seal. See equation \ref{eq:ticketconditionfalse}.
+  \item[$\Xguarantee = \token{\$jam\_guarantee}$] \emph{Ed25519} Guarantee statements. See equation \ref{eq:guarantorsig}.
+  \item[$\Xannounce = \token{\$jam\_announce}$] \emph{Ed25519} Audit announcement statements. See equation \ref{eq:announcement}.
+  \item[$\Xticket = \token{\$jam\_ticket\_seal}$] \emph{Bandersnatch Ring\textsc{vrf}} Ticket generation and regular block seal. See equation \ref{eq:ticketconditiontrue}.
+  \item[$\Xaudit = \token{\$jam\_audit}$] \emph{Bandersnatch} Audit selection entropy. See equations \ref{eq:initialaudit} and \ref{eq:latertranches}.
+  \item[$\Xvalid = \token{\$jam\_valid}$] \emph{Ed25519} Judgments for valid work-reports. See equation \ref{eq:judgments}.
+  \item[$\Xinvalid = \token{\$jam\_invalid}$] \emph{Ed25519} Judgments for invalid work-reports. See equation \ref{eq:judgments}.
+\end{description}
