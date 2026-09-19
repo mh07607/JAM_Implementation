@@ -85,7 +85,7 @@ def parse_header(b: bytes) -> dict:
     # Only works for certain headers under assumptions for both markers
     # offenders marker excluded
     r = Reader(b)
-    parent, prior_state_root, extrinsic_hash = r.hash32(), r.hash32(), r.hash32()
+    parent, parent_state_root, extrinsic_hash = r.hash32(), r.hash32(), r.hash32()
     slot = r.u32()
     epoch_marker = read_maybe(r, 32)
     tickets_marker = read_maybe(r, 32)
@@ -94,7 +94,7 @@ def parse_header(b: bytes) -> dict:
     # r.finish()
     return {
         "parent": parent.hex(),
-        "prior_state_root": prior_state_root.hex(),
+        "parent_state_root": parent_state_root.hex(),
         "extrinsic_hash": extrinsic_hash.hex(),
         "slot": slot,
         "epoch_marker": epoch_marker,
