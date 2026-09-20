@@ -3,6 +3,13 @@ import hashlib
 HASH_LEN_IN_BYTES = 32
 ZERO_HASH = bytes(HASH_LEN_IN_BYTES)
 
+# Tiny Config
+# NUM_VALIDATORS_IN_EPOCH_MARK = 6
+# LENGTH_OF_EPOCH_IN_TIMESLOTS = 12
+# Full Config
+NUM_VALIDATORS_IN_EPOCH_MARK = 1023
+LENGTH_OF_EPOCH_IN_TIMESLOTS = 600
+
 def hash_via_blake2b(data: bytes) -> bytes:
     return hashlib.blake2b(data, HASH_LEN_IN_BYTES).digest()
 
@@ -37,7 +44,7 @@ def encode_compact(x: int) -> bytes:
 
 def decode_compact_length_prefix(b: bytes, offset: int) -> tuple[int, int]:
     first_octet = b[offset]
-    if first_octet < 128: return first_octet, off + 1
+    if first_octet < 128: return first_octet, offset + 1
     table = [(128, 192, 1), (192, 224, 2), (224, 240, 3), (240, 248, 4),
             (248, 252, 5), (252, 254, 6), (254, 255, 7), (255, 256, 8)]
     for low, high, l in table:
@@ -69,9 +76,47 @@ class Reader():
     def u64(self): return decode_fixed(self.take(8), 8)
     def hash32(self): return self.take(32)
     def var_blob(self) -> bytes:
-        n, o = decode_compact_at_offset(self.b, self.o)
+        n, o = decode_compact_length_prefix(self.b, self.o)
         self.o = o
         return self.take(n)
+    def epoch_marker(self) -> None | dict:
+        d = self.u8();
+        if d == 0:
+            return None
+        entropy, tickets_entropy = self.hash32().hex(), self.hash32().hex()
+        # In JAM 0.8.0, the validators are length prefixed
+        # n, o = decode_compact_length_prefix(self.b, self.o)
+        # self.o = o
+        validators = []
+        for i in range(NUM_VALIDATORS_IN_EPOCH_MARK):
+            validator = {
+                "bandersnatch": self.hash32().hex(),
+                "ed25519": self.hash32().hex()
+            }
+            validators.append(validator)
+        return {
+            "entropy": entropy,
+            "tickets_entropy": tickets_entropy,
+            "validators": validators
+        }
+    def winning_tickets_marker(self) -> None | list[dict]:
+        d = self.u8();
+        if d == 0:
+            return None        
+        tickets = []
+        for i in range(LENGTH_OF_EPOCH_IN_TIMESLOTS):            
+            tickets.append({
+                "id": self.hash32().hex(),
+                "attempt": self.u8()
+            })
+        return tickets
+    def offenders_marker(self) -> None | list[dict]:
+        n, o = decode_compact_length_prefix(self.b, self.o)
+        self.o = o
+        offenders = []
+        for i in range(n):
+            offenders.append(self.hash32().hex())
+        return offenders        
     def finish(self):
         assert self.o == len(self.b), f"{len(self.b) - self.o} octets"
 
@@ -87,20 +132,24 @@ def parse_header(b: bytes) -> dict:
     r = Reader(b)
     parent, parent_state_root, extrinsic_hash = r.hash32(), r.hash32(), r.hash32()
     slot = r.u32()
-    epoch_marker = read_maybe(r, 32)
-    tickets_marker = read_maybe(r, 32)
+    epoch_marker = r.epoch_marker()    
+    tickets_marker = r.winning_tickets_marker()
     author_index = r.u16()    
-    vrf_sig = r.take(96)
+    vrf_sig = r.take(96).hex()
+    offenders_marker = r.offenders_marker()
+    seal = r.take(96).hex()
     # r.finish()
     return {
         "parent": parent.hex(),
         "parent_state_root": parent_state_root.hex(),
         "extrinsic_hash": extrinsic_hash.hex(),
         "slot": slot,
-        "epoch_marker": epoch_marker,
-        "tickets_marker": tickets_marker,
+        "epoch_mark": epoch_marker,
+        "tickets_mark": tickets_marker,
         "author_index": author_index,
-        "entropy_vrf_signature": vrf_sig
+        "entropy_vrf_signature": vrf_sig,
+        "offenders_mark": offenders_marker,
+        "seal": seal
     }
 
 def state_serialize():
@@ -111,6 +160,6 @@ def merkalize():
 
 # if __name__ == "main":    
 b = None
-with open("/home/arsalan/repos/JAM_Implementation/jamtestvectors/codec/tiny/header_0.bin", "rb") as f:
+with open("/home/arsalan/repos/JAM_Implementation/jamtestvectors/codec/full/header_0.bin", "rb") as f:
     b = f.read()
 print(parse_header(b))
