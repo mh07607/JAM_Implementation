@@ -127,10 +127,7 @@ def read_maybe(r: Reader, fixed_len: int | None) -> bytes | None:
     d = r.u8()
     if d == 0:
         return None
-    return r.take(fixed_len) if fixed_len is not None else read_variable_length_sequence(r)
-
-# class Encoder():
-    
+    return r.take(fixed_len) if fixed_len is not None else read_variable_length_sequence(r)    
 
 # Header parsing (bytes -> models.Header) now lives in codec/parse_header.py:
 #   from jam_impl.codec.parse_header import parse_header
