@@ -1,0 +1,27 @@
+[project]
+name = "jam-impl"
+version = "0.1.0"
+description = "W3F JAM Prize Milestone 1 — IMPORTER: codec, STF, block import"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["uv_build>=0.11.21,<0.12"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.uv.build-backend]
+# jam_impl/ lives at the project root (JAM_Implementation/), not src/
+module-root = ""
+module-name = "jam_impl"
+
+[tool.pytest.ini_options]
+testpaths = ["jam_impl/tests"]

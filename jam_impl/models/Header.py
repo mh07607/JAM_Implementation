@@ -1,14 +1,90 @@
+"""
+JAM Header model — GP 5.1 (H), 6.28 (H_E), 6.29 (H_W), C.22–C.25.
+
+Field spellings follow the codec test-vector JSON sidecars
+(jamtestvectors/codec/*/header_*.json) so that the vectors, the binary
+parser (codec/parse_header.py) and this model share one vocabulary.
+GP symbols live in the comments. All byte fields are raw `bytes`;
+hex strings only at the JSON/printing edge.
+
+Field order below is the wire/serialization order (GP C.23):
+P, R, X, T, E, W, I, V, O, S — not the GP 5.1 tuple order.
+"""
+
 from dataclasses import dataclass
 
+
+def _hb(s: str) -> bytes:
+    """Hex string -> bytes; tolerates an optional 0x prefix."""
+    return bytes.fromhex(s[2:] if s.startswith("0x") else s)
+
+
 @dataclass
-class Header: # H
-    parent_header_hash: str # parent header? hash H_P
-    prior_state_root: str # prior state root H_R
-    extrinsic_hash: str # extrinsic hash H_X
-    timeslot_index: int # timeslot index H_T
-    epoch_marker: str | None # epoch_marker H_E
-    winning_tickets_marker: str | None # Winning Tickets H_W
-    offenders_marker: list[str] # Offenders Markers H_O
-    author_index: int # Block Author Index H_I
-    entropy_yielding_vrf_signature: str # Entropy-yielding VRF signature H_V
-    block_seal: str # Block seal H_S
+class ValidatorKeys:  # EpochMarkValidatorKeys (GP 6.28; jam-types.asn:777)
+    bandersnatch: bytes  # 32-octet compressed Bandersnatch public key
+    ed25519: bytes       # 32-octet Ed25519 public key
+
+
+@dataclass
+class EpochMarker:  # H_E (GP 6.28); present iff the block opens a new epoch
+    entropy: bytes           # eta0, 32 octets
+    tickets_entropy: bytes   # eta1, 32 octets
+    # Exactly V entries (6 tiny / 1023 full) — fixed size, NOT length-prefixed
+    # on the 0.7.1 vector wire; GP 0.8.0 C.25 adds a compact length prefix.
+    validators: list[ValidatorKeys]
+
+
+@dataclass
+class TicketBody:  # TicketBody (GP 6.6, C.33; jam-types.asn)
+    id: bytes      # y, 32-octet ticket identifier (ring-VRF output)
+    attempt: int   # e, 1-octet attempt counter (E1)
+
+
+@dataclass
+class Header:  # H = (H_P, H_R, H_X, H_T, H_E, H_W, H_O, H_I, H_V, H_S), GP 5.1
+    parent: bytes                          # H_P = H(E(parent header)), 32
+    parent_state_root: bytes               # H_R, 32
+    extrinsic_hash: bytes                  # H_X, 32
+    slot: int                              # H_T, E4 little-endian
+    epoch_mark: EpochMarker | None         # H_E
+    tickets_mark: list[TicketBody] | None  # H_W: epoch-length entries when present
+    author_index: int                      # H_I, E2 LE, index into kappa'
+    entropy_source: bytes                  # H_V, 96-octet Bandersnatch VRF signature
+    offenders_mark: list[bytes]            # H_O, compact-prefixed Vec of 32-octet Ed25519 keys
+    seal: bytes                            # H_S, 96-octet Bandersnatch VRF signature over E_U(H)
+
+    # ---- converters -------------------------------------------------------
+    # The dict shapes below are shared by two sources that agree on keys and
+    # differ only in hex formatting: the vector JSON sidecars (0x-prefixed)
+    # and the Reader marker methods in util.py (plain .hex()).
+
+    @classmethod
+    def epoch_mark_from_dict(cls, d: dict) -> EpochMarker:
+        return EpochMarker(
+            entropy=_hb(d["entropy"]),
+            tickets_entropy=_hb(d["tickets_entropy"]),
+            validators=[
+                ValidatorKeys(bandersnatch=_hb(v["bandersnatch"]), ed25519=_hb(v["ed25519"]))
+                for v in d["validators"]
+            ],
+        )
+
+    @classmethod
+    def tickets_mark_from_list(cls, tickets: list[dict]) -> list[TicketBody]:
+        return [TicketBody(id=_hb(t["id"]), attempt=t["attempt"]) for t in tickets]
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Header":
+        """Vector JSON sidecar (or any dict with the same keys) -> Header."""
+        return cls(
+            parent=_hb(d["parent"]),
+            parent_state_root=_hb(d["parent_state_root"]),
+            extrinsic_hash=_hb(d["extrinsic_hash"]),
+            slot=d["slot"],
+            epoch_mark=cls.epoch_mark_from_dict(d["epoch_mark"]) if d.get("epoch_mark") else None,
+            tickets_mark=cls.tickets_mark_from_list(d["tickets_mark"]) if d.get("tickets_mark") else None,
+            author_index=d["author_index"],
+            entropy_source=_hb(d["entropy_source"]),
+            offenders_mark=[_hb(k) for k in (d.get("offenders_mark") or [])],
+            seal=_hb(d["seal"]),
+        )

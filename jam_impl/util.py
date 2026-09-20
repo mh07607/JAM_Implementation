@@ -42,6 +42,9 @@ def encode_compact(x: int) -> bytes:
             return bytes([size_tag]) + encode_fixed(x % 2**(8*l), l)            
     return bytes([2**8-1]) + u64(x)
 
+# def encode_with_length_prefix(b: bytes) -> bytes:
+#     return encode_compact(len(b)) + b
+
 def decode_compact_length_prefix(b: bytes, offset: int) -> tuple[int, int]:
     first_octet = b[offset]
     if first_octet < 128: return first_octet, offset + 1
@@ -51,11 +54,11 @@ def decode_compact_length_prefix(b: bytes, offset: int) -> tuple[int, int]:
         if low <= first_octet < high:
             high_part = first_octet - (2**8 - 2**(8-l))
             payload = b[offset+1 : offset+1+l]
-            return high_part * 2**(8*l) + payload, offset + 1 + l
+            return high_part * 2**(8*l) + int.from_bytes(payload, "little"), offset + 1 + l
     raise ValueError(f"Invalid compact. Tag: {first_octet}")
 
 def maybe_bytes(blob: bytes | None) -> bytes:
-    return b"\x00" if x is None else b"\x01" + x
+    return b"\x00" if blob is None else b"\x01" + blob
 
 def read_variable_length_sequence(r: Reader) -> bytes:
     n, o = decode_compact_length_prefix(r.b, r.o)
@@ -110,7 +113,7 @@ class Reader():
                 "attempt": self.u8()
             })
         return tickets
-    def offenders_marker(self) -> None | list[dict]:
+    def offenders_marker(self) -> list[str]:
         n, o = decode_compact_length_prefix(self.b, self.o)
         self.o = o
         offenders = []
@@ -126,31 +129,12 @@ def read_maybe(r: Reader, fixed_len: int | None) -> bytes | None:
         return None
     return r.take(fixed_len) if fixed_len is not None else read_variable_length_sequence(r)
 
-def parse_header(b: bytes) -> dict:
-    # Only works for certain headers under assumptions for both markers
-    # offenders marker excluded
-    r = Reader(b)
-    parent, parent_state_root, extrinsic_hash = r.hash32(), r.hash32(), r.hash32()
-    slot = r.u32()
-    epoch_marker = r.epoch_marker()    
-    tickets_marker = r.winning_tickets_marker()
-    author_index = r.u16()    
-    vrf_sig = r.take(96).hex()
-    offenders_marker = r.offenders_marker()
-    seal = r.take(96).hex()
-    # r.finish()
-    return {
-        "parent": parent.hex(),
-        "parent_state_root": parent_state_root.hex(),
-        "extrinsic_hash": extrinsic_hash.hex(),
-        "slot": slot,
-        "epoch_mark": epoch_marker,
-        "tickets_mark": tickets_marker,
-        "author_index": author_index,
-        "entropy_vrf_signature": vrf_sig,
-        "offenders_mark": offenders_marker,
-        "seal": seal
-    }
+# class Encoder():
+    
+
+# Header parsing (bytes -> models.Header) now lives in codec/parse_header.py:
+#   from jam_impl.codec.parse_header import parse_header
+# (the old dict-based parse_header was removed in the dataclass refactor)
 
 def state_serialize():
     pass
@@ -158,8 +142,15 @@ def state_serialize():
 def merkalize():
     pass
 
-# if __name__ == "main":    
-b = None
-with open("/home/arsalan/repos/JAM_Implementation/jamtestvectors/codec/full/header_0.bin", "rb") as f:
-    b = f.read()
-print(parse_header(b))
+if __name__ == "__main__":
+    # Smoke: parse the full-spec header_0 vector and print it
+    from jam_impl.codec.parse_header import parse_header, encode_header
+    b = None
+    with open("/home/arsalan/repos/JAM_Implementation/jamtestvectors/codec/full/header_0.bin", "rb") as f:
+        b = f.read()        
+    h = parse_header(b, spec="full")
+    encoded_header = encode_header(h)
+    print("original", b)
+    print("mine", encoded_header)
+    assert encoded_header == b
+
