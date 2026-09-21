@@ -82,6 +82,7 @@ class Reader():
         n, o = decode_compact_length_prefix(self.b, self.o)
         self.o = o
         return self.take(n)
+    #def variable_length_dict(self) -> bytes:        
     def epoch_marker(self) -> None | dict:
         d = self.u8();
         if d == 0:
