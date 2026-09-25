@@ -1,11 +1,3 @@
-from dataclasses import dataclass
+from jam_impl.models.extrinsic_components.Guarantee import Assurance
 
-@dataclass
-class Assurance:
-    anchor: str
-    bitfield: str
-    validator_index: int
-    signature: str
-
-    def encode(self):
-        pass
+__all__ = ["Assurance"]
