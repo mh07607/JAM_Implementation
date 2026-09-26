@@ -1,22 +1,18 @@
 """
 Header codec tests against the official jamtestvectors.
 
-bin-vs-json: parse the .bin with parse_header, load the .json with
-Header.from_dict, require equality. Strongest check available pre-encoder
-(round-trip encode comes later).
-
-Note: written as unittest.TestCase classes — Python 3.14's unittest loader
-no longer discovers module-level test_* functions, and pytest isn't
-installed in this venv.
+bin-vs-json: parse the .bin with decode_header, load the .json with
+Header.from_dict, require equality. encode(parse(bin)) == bin is covered in
+test_codec_roundtrip.py.
 
 Run from the repo root (JAM_Implementation/):
-    jam_impl/.venv/bin/python -m unittest jam_impl.tests.test_header_codec -v
+    uv run jam_impl/tests/test_header_codec.py
 """
 
 import os
 import unittest
 
-from jam_impl.codec.parse_header import parse_header, load_vector
+from jam_impl.codec.header_codec import decode_header, load_vector
 from jam_impl.models import Header
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -32,19 +28,19 @@ class BinMatchesJson(unittest.TestCase):
 
     def test_tiny_header_0(self):
         b, j = load_vector("tiny", "header_0")
-        self.assertEqual(parse_header(b, spec="tiny"), Header.from_dict(j))
+        self.assertEqual(decode_header(b, spec="tiny"), Header.from_dict(j))
 
     def test_tiny_header_1(self):
         b, j = load_vector("tiny", "header_1")
-        self.assertEqual(parse_header(b, spec="tiny"), Header.from_dict(j))
+        self.assertEqual(decode_header(b, spec="tiny"), Header.from_dict(j))
 
     def test_full_header_0(self):
         b, j = load_vector("full", "header_0")
-        self.assertEqual(parse_header(b, spec="full"), Header.from_dict(j))
+        self.assertEqual(decode_header(b, spec="full"), Header.from_dict(j))
 
     def test_full_header_1(self):
         b, j = load_vector("full", "header_1")
-        self.assertEqual(parse_header(b, spec="full"), Header.from_dict(j))
+        self.assertEqual(decode_header(b, spec="full"), Header.from_dict(j))
 
     def test_all_codec_headers(self):
         """Catch new header fixtures automatically (both specs)."""
@@ -56,7 +52,7 @@ class BinMatchesJson(unittest.TestCase):
                     name = f[:-4]
                     b, j = load_vector(spec, name)
                     self.assertEqual(
-                        parse_header(b, spec=spec), Header.from_dict(j),
+                        decode_header(b, spec=spec), Header.from_dict(j),
                         msg=f"{spec}/{name}",
                     )
                     total += 1
@@ -68,7 +64,7 @@ class TinyHeader0Details(unittest.TestCase):
 
     def setUp(self):
         b, _ = load_vector("tiny", "header_0")
-        self.h = parse_header(b, spec="tiny")
+        self.h = decode_header(b, spec="tiny")
 
     def test_fixed_front_fields(self):
         self.assertEqual(self.h.slot, 42)

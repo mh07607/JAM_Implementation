@@ -1,6 +1,3 @@
-from dataclasses import dataclass
+from jam_impl.models.extrinsic_components.Guarantee import Preimage
 
-@dataclass
-class Preimage:
-    requester: int
-    blob: str
+__all__ = ["Preimage"]

@@ -1,6 +1,3 @@
-from dataclasses import dataclass
+from jam_impl.models.extrinsic_components.Guarantee import Ticket
 
-@dataclass
-class Ticket:
-    attempt: int
-    signature: str
+__all__ = ["Ticket"]

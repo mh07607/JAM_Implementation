@@ -1,7 +1,5 @@
-from dataclasses import dataclass
+from jam_impl.models.extrinsic_components.Guarantee import (
+    Disputes, Verdict, Judgment, Culprit, Fault,
+)
 
-@dataclass
-class Disputes:
-    verdicts: list
-    culprits: list
-    faults: list
+__all__ = ["Disputes", "Verdict", "Judgment", "Culprit", "Fault"]
