@@ -2,6 +2,9 @@ import jam_impl.util as util
 from jam_impl.util import Decoder, Encoder
 from jam_impl.codec.header_codec import spec_globals
 from jam_impl.codec.extrinsic_codec import decode_report
+from jam_impl.models.State import (
+    ServiceDefinition, ServiceDefinitionData, ServiceDefinitionDataService
+)
 from collections.abc import Callable
 from dataclasses import dataclass
 from tqdm import tqdm
@@ -10,29 +13,6 @@ AUTHORIZATION_QUEUE_LENGTH = 80
 RECENT_HISTORY_LENGTH = 8
 TICKET_ENTRY_PER_VALIDATOR_COUNT = 2
 VALIDATORS_PER_CORE = 3
-
-@dataclass
-class ServiceDefinitionDataService:
-    version: int
-    code_hash: bytes
-    balance: int
-    min_item_gas: int
-    min_memo_gas: int
-    bytes_count: int
-    deposit_offset: int
-    items: int
-    creation_slot: int
-    last_accumulation_slot: int
-    parent_service: int
-
-@dataclass
-class ServiceDefinitionData:
-    service: ServiceDefinitionDataService
-
-@dataclass
-class ServiceDefinition:
-    service_index: int
-    data: ServiceDefinitionData
 
 #Helpers
 class StrictSet(set):
@@ -210,7 +190,7 @@ def decode_registrar_state(b: bytes) -> tuple[str, bytes]:
     last_epoch_validator_statistics = decode_validators_statistics(d)    
     core_statistics = [ 
         {
-            "da-load": d.decode_compact(),
+            "da_load": d.decode_compact(),
             "popularity": d.decode_compact(),
             "imports": d.decode_compact(),
             "extrinsic_count": d.decode_compact(),
@@ -219,7 +199,7 @@ def decode_registrar_state(b: bytes) -> tuple[str, bytes]:
             "bundle_size": d.decode_compact(),
             "gas_used": d.decode_compact()
         }
-        for _ in range(util.NUM_VALIDATORS_IN_EPOCH_MARK // 3) ]        
+        for _ in range(util.NUM_VALIDATORS_IN_EPOCH_MARK // VALIDATORS_PER_CORE) ]        
     n = d.decode_compact()
     service_statistics = {}
     for _ in range(n):

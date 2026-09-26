@@ -1,12 +1,3 @@
-"""
-Shared codec primitives (GP appendix C): fixed-width ints, compact numbers,
-and the Decoder/Encoder pair that walks the wire.
-
-Decoder = cursor over bytes ("how the wire becomes values").
-Encoder = builder producing bytes ("how values become the wire").
-Everything else (header, extrinsic components) lives in jam_impl/codec/.
-"""
-
 import hashlib
 
 HASH_LEN_IN_BYTES = 32
@@ -126,9 +117,8 @@ class Encoder():
         return b"".join(self.parts)
 
 
-# ---- backwards-compat aliases (codec/*_codec.py and friends) ----------------
 # Reader -> Decoder; decode_compact_length_prefix -> module function kept for
-# compatibility, delegating to the same table as Decoder.decode_compact.
+# compatibility
 
 Reader = Decoder
 
@@ -160,8 +150,7 @@ def decode_compact(b: bytes, offset: int = 0) -> tuple[int, int]:
 def maybe_bytes(blob: bytes | None) -> bytes:
     return b"\x00" if blob is None else b"\x01" + blob
 
-if __name__ == "__main__":
-    # Smoke: parse the full-spec header_0 vector and print it
+if __name__ == "__main__":    
     from jam_impl.codec.header_codec import decode_header
     with open("/home/arsalan/repos/JAM_Implementation/jamtestvectors/codec/full/header_0.bin", "rb") as f:
         h = decode_header(f.read(), spec="full")

@@ -1,5 +1,28 @@
 from dataclasses import dataclass
 
+@dataclass
+class ServiceDefinitionDataService:
+    version: int
+    code_hash: bytes
+    balance: int
+    min_item_gas: int
+    min_memo_gas: int
+    bytes_count: int
+    deposit_offset: int
+    items: int
+    creation_slot: int
+    last_accumulation_slot: int
+    parent_service: int
+
+@dataclass
+class ServiceDefinitionData:
+    service: ServiceDefinitionDataService
+
+@dataclass
+class ServiceDefinition:
+    service_index: int
+    data: ServiceDefinitionData
+
 class AuthorizationQueue:
     pass
 

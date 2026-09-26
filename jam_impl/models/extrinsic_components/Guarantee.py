@@ -1,8 +1,6 @@
 """
-Extrinsic component models — GP 4.3, C.17–C.21.
-
 Field spellings follow the codec test-vector JSON sidecars
-(jamtestvectors/codec/*/*_extrinsic.json). All byte/signature fields are
+(codec/*/*_extrinsic.json). All byte/signature fields are
 raw `bytes`; hex strings only at the JSON/printing edge.
 """
 
