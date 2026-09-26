@@ -3,14 +3,50 @@ from jam_impl.util import Decoder, Encoder
 from jam_impl.codec.header_codec import spec_globals
 from jam_impl.codec.extrinsic_codec import decode_report
 from collections.abc import Callable
+from dataclasses import dataclass
+from tqdm import tqdm
 
 AUTHORIZATION_QUEUE_LENGTH = 80
 RECENT_HISTORY_LENGTH = 8
 TICKET_ENTRY_PER_VALIDATOR_COUNT = 2
 VALIDATORS_PER_CORE = 3
 
-#Helper
-def decode_validator_list(d: Decoder) -> list[bytes]:    
+@dataclass
+class ServiceDefinitionDataService:
+    version: int
+    code_hash: bytes
+    balance: int
+    min_item_gas: int
+    min_memo_gas: int
+    bytes_count: int
+    deposit_offset: int
+    items: int
+    creation_slot: int
+    last_accumulation_slot: int
+    parent_service: int
+
+@dataclass
+class ServiceDefinitionData:
+    service: ServiceDefinitionDataService
+
+@dataclass
+class ServiceDefinition:
+    service_index: int
+    data: ServiceDefinitionData
+
+#Helpers
+class StrictSet(set):
+    def __init__(self, iterable=None):
+        if iterable is not None:
+            for item in iterable:
+                self.add(item)
+
+    def add(self, item):
+        if item in self:
+            raise ValueError(f"Duplicate item found: {item!r}")
+        super().add(item)
+
+def decode_validator_list(d: Decoder) -> list[dict]:
     validators = []
     for _ in range(util.NUM_VALIDATORS_IN_EPOCH_MARK):
         # This is a set, there should be no duplicates here
@@ -23,6 +59,20 @@ def decode_validator_list(d: Decoder) -> list[bytes]:
         })
     return validators
 
+def decode_validators_statistics(d: Decoder) -> list[dict]:
+    return [
+        {
+            "num_blocks_produced": d.u32(),
+            "num_tickets_introduced": d.u32(),
+            "num_preimages_introduced": d.u32(),
+            "num_octets_introduced": d.u32(),
+            "num_reports_guaranteed": d.u32(),
+            "num_availability_assurances": d.u32()
+        }
+        for _ in range(util.NUM_VALIDATORS_IN_EPOCH_MARK)
+    ]
+
+# state component decoders
 def decode_authorization_pool(b :bytes) -> tuple[str, bytes]:
     # TODO make core_count a variable inside util so that it can be used in multiple places
     core_count = util.NUM_VALIDATORS_IN_EPOCH_MARK // VALIDATORS_PER_CORE
@@ -151,21 +201,94 @@ def decode_privileged_services(b: bytes) -> tuple[str, bytes]:
     #     auto_accumulating_services)
     d.finish()
 
+# TODO: These look like what is called statistics in the ASN.
+# Many of these are compacts but not described as compacts in neither
+# the ASN or the GP
 def decode_registrar_state(b: bytes) -> tuple[str, bytes]:
     d = Decoder(b)
+    current_validator_statistics = decode_validators_statistics(d)
+    last_epoch_validator_statistics = decode_validators_statistics(d)    
+    core_statistics = [ 
+        {
+            "da-load": d.decode_compact(),
+            "popularity": d.decode_compact(),
+            "imports": d.decode_compact(),
+            "extrinsic_count": d.decode_compact(),
+            "extrinsic_size": d.decode_compact(),
+            "exports": d.decode_compact(),
+            "bundle_size": d.decode_compact(),
+            "gas_used": d.decode_compact()
+        }
+        for _ in range(util.NUM_VALIDATORS_IN_EPOCH_MARK // 3) ]        
+    n = d.decode_compact()
+    service_statistics = {}
+    for _ in range(n):
+        service_id = d.u32()
+        record = {
+            "provided_count": d.decode_compact(),
+            "provided_size": d.decode_compact(),
+            "refinement_count": d.decode_compact(),
+            "refinement_gas_used": d.decode_compact(),
+            "imports": d.decode_compact(),
+            "extrinsic_count": d.decode_compact(),
+            "extrinsic_size": d.decode_compact(),
+            "exports": d.decode_compact(),
+            "accumulate_count": d.decode_compact(),
+            "accumulate_gas_used": d.decode_compact()
+        }
+        service_statistics[service_id] = record
+    d.finish()
     # = d.u32(), d.u32()
 
 def decode_accumulation_queue(b: bytes) -> tuple[str, bytes]:
     d = Decoder(b)
+    for _ in range(util.LENGTH_OF_EPOCH_IN_TIMESLOTS):
+        n = d.decode_compact()
+        for _ in range(n):
+            report = decode_report(d)
+            m = d.decode_compact()
+            # TODO: Below is a set
+            dependencies = StrictSet([ d.hash32().hex() for _ in range (m) ])
+    d.finish()
 
 def decode_accumulation_history(b: bytes) -> tuple[str, bytes]:
     d = Decoder(b)
+    for _ in range(util.LENGTH_OF_EPOCH_IN_TIMESLOTS):        
+        n = d.decode_compact()
+        # TODO: Below is a set
+        work_package_hashes = StrictSet([ d.hash32().hex() for _ in range (n) ])
+    d.finish()
 
+# TODO: These look like what is called accumulation outputs in the ASN.
 def decode_statistics(b: bytes) -> tuple[str, bytes]:
     d = Decoder(b)
+    n = d.decode_compact()
+    for _ in range(n):
+        stat_id = d.u32()
+        work_report_hash = d.hash32().hex()
+    d.finish()
 
-def decode_service_definition(b: bytes) -> tuple[str, bytes]:
+def decode_service_definition(b: bytes, service_index: int) -> ServiceDefinition:
     d = Decoder(b)
+    service_definition = ServiceDefinition(
+        service_index=service_index,
+        data=ServiceDefinitionData(
+            service=ServiceDefinitionDataService(
+                version=d.u8(),
+                code_hash=d.hash32(),
+                balance=d.u64(),
+                min_item_gas=d.u64(),
+                min_memo_gas=d.u64(),
+                bytes_count=d.u64(),
+                deposit_offset=d.u64(),
+                items=d.u32(),
+                creation_slot=d.u32(),
+                last_accumulation_slot=d.u32(),
+                parent_service=d.u32()
+            )
+        )
+    )
+    return service_definition
 
 # def decode_storage(d: Decoder) -> tuple[str, bytes]:
 #     n = d.decode_compact()
@@ -195,14 +318,14 @@ key_to_state_component_mapping = {
     14: decode_accumulation_queue,
     15: decode_accumulation_history,
     16: decode_statistics,
-    255: decode_service_definition
+#    255: decode_service_definition
 }
 
 # GP D.1 Form 1 to 3
 def state_key_decoder(key: bytes) -> Callable:    
     first = key[0]
     # first form
-    if(key[1:] == b'\x00' * 30):
+    if(0 < first <= 16 and key[1:] == b'\x00' * 30):
         return key_to_state_component_mapping[first]
     # second form
     elif(first == 255 
@@ -210,10 +333,11 @@ def state_key_decoder(key: bytes) -> Callable:
     and key[4] == 0
     and key[6] == 0
     and key[8:] == b'\x00' * 23 ):
-        return key_to_state_component_mapping[255]
+        service_index = key[0:1] + key[2:3] + key[4:5] + key[6:7]
+        return int.from_bytes(service_index, byteorder="little")
     # third form
     else:
-        service_index = key[0:1] + key[2:3] + key[4:5] + key[6:7]                
+        service_index = key[0:1] + key[2:3] + key[4:5] + key[6:7]
         return decode_form_three_component
 
 def decode_state(b: bytes):
@@ -228,7 +352,11 @@ def decode_state(b: bytes):
             n = d.decode_compact()
             value = d.take(n)
             decode_function = state_key_decoder(key)
-            decode_function(value)
+            if(type(decode_function) == int):
+                service_index = decode_function
+                decode_service_definition(value, service_index)
+            else:
+                decode_function(value)
             # print(name)
             # print(value.hex())
             keyvals.append({
@@ -244,7 +372,19 @@ def decode_state(b: bytes):
         }
 
 if __name__ == "__main__":
+    import os
+    test_vectors = []
+    for root, dirs, files in os.walk("/home/arsalan/repos/JAM_Implementation/jamtestvectors/traces/"):
+        for file in files:
+            if file.endswith(".bin") and not file.startswith("ec-"):
+                test_vectors.append(os.path.join(root, file))
+    print(len(test_vectors), "to complete")
     b = None
-    with open("/home/arsalan/repos/JAM_Implementation/jamtestvectors/traces/fuzzy/00000026.bin", "rb") as f:
-        b = f.read()
-    decode_state(b)
+    for test_vector in tqdm(test_vectors):
+        try: 
+            with open(test_vector, "rb") as f:
+                b = f.read()
+            decode_state(b)
+        except Exception as error:
+            print(f"Error!\n{error}\n on {test_vector}")
+        
